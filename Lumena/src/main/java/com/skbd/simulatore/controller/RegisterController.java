@@ -7,5 +7,6 @@ public class RegisterController {
     }
 
     public void handleGoToLogin(ActionEvent actionEvent) {
+
     }
 }
