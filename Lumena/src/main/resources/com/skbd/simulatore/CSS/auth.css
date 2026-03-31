@@ -1,0 +1,145 @@
+/* ═══════════════════════════════════════════════════════════
+   auth.css  —  shared styles for login.fxml & register.fxml
+   Reference in FXML: stylesheets="@styles/auth.css"
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Palette ─────────────────────────────────────────────── */
+/* Primary accent  : #2C2C2C  (near-black, used for buttons)  */
+/* Surface         : #FFFFFF  (card background)               */
+/* Background      : #F4F4F4  (scene background)              */
+/* Border          : #CCCCCC                                  */
+/* Text primary    : #1A1A1A                                  */
+/* Text secondary  : #666666                                  */
+/* Error           : #C0392B                                  */
+
+/* ── Root scene ──────────────────────────────────────────── */
+.root-pane {
+    -fx-background-color: #F4F4F4;
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.login-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 24, 0, 0, 4);
+    -fx-max-width:  420;
+    -fx-min-width:  320;
+    -fx-pref-width: 380;
+}
+
+/* ── App title (LUMENA) ──────────────────────────────────── */
+.app-title {
+    -fx-text-fill: #1A1A1A;
+    -fx-font-size: 36;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 4;
+}
+
+/* ── Page heading (LOGIN / REGISTER) ────────────────────── */
+.page-heading {
+    -fx-text-fill: #1A1A1A;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 2;
+}
+
+/* ── Field group wrapper ─────────────────────────────────── */
+.field-group {
+    -fx-max-width: Infinity;
+}
+
+/* ── Field labels ────────────────────────────────────────── */
+.field-label {
+    -fx-text-fill: #444444;
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+}
+
+/* ── Text / password inputs ──────────────────────────────── */
+.input-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 14;
+    -fx-prompt-text-fill: #AAAAAA;
+    -fx-pref-height: 42;
+}
+
+.input-field:focused {
+    -fx-border-color: #2C2C2C;
+    -fx-effect: dropshadow(gaussian, rgba(44,44,44,0.15), 6, 0, 0, 0);
+}
+
+/* ── Remember-me checkbox ────────────────────────────────── */
+.remember-checkbox {
+    -fx-text-fill: #555555;
+    -fx-font-size: 13;
+}
+
+.remember-checkbox .box {
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-background-color: #FFFFFF;
+}
+
+.remember-checkbox:selected .box {
+    -fx-background-color: #2C2C2C;
+    -fx-border-color: #2C2C2C;
+}
+
+.remember-checkbox:selected .mark {
+    -fx-background-color: #FFFFFF;
+}
+
+/* ── Error label ─────────────────────────────────────────── */
+.error-label {
+    -fx-text-fill: #C0392B;
+    -fx-font-size: 12;
+    -fx-wrap-text: true;
+}
+
+/* ── Primary action button ───────────────────────────────── */
+.primary-button {
+    -fx-background-color: #2C2C2C;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1.5;
+    -fx-background-radius: 8;
+    -fx-padding: 12 0 12 0;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #444444;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #111111;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* ── Bottom link row ─────────────────────────────────────── */
+.link-text {
+    -fx-text-fill: #888888;
+    -fx-font-size: 13;
+}
+
+.nav-link {
+    -fx-text-fill: #2C2C2C;
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+.nav-link:hover {
+    -fx-text-fill: #555555;
+}

@@ -11,6 +11,7 @@ module com.skbd.simulatore {
     //requires smile.data;
 
     opens com.skbd.simulatore.view to javafx.fxml;
+    opens com.skbd.simulatore.controller to javafx.fxml;
 
     exports com.skbd.simulatore.view;
 }
