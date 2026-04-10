@@ -3,8 +3,13 @@ package com.skbd.simulatore.controller;
 import com.skbd.simulatore.model.PredictiveModel;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -15,13 +20,22 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.SVGPath;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.Year;
 import java.util.ArrayList;
@@ -68,7 +82,7 @@ public class MapController implements Initializable {
     //Relative to the user image
     @FXML private StackPane userAvatarPane;
     @FXML private ImageView userAvatarImage; // L'ImageView che abbiamo aggiunto
-    @FXML private Label avatarLabel;       // La label esistente
+    @FXML private Label userAvatarLabel;       // La label esistente
 
     // ── Animation constants ───────────────────────────────────
     private static final double ANIMATION_MS      = 400.0;
@@ -76,6 +90,9 @@ public class MapController implements Initializable {
 
     // ── Currently selected region ─────────────────────────────
     private String selectedRegion = "VENETO";
+
+    //Map container
+    @FXML private Pane mapContainer;
 
     // Predictive model
     private PredictiveModel preModel = new PredictiveModel();
@@ -95,6 +112,9 @@ public class MapController implements Initializable {
 
         //Train the predictive model
         //preModel.trainModel();
+
+        //Load the map
+        loadMap();
 
         //Initialize all images
         initializeImages();
@@ -116,17 +136,17 @@ public class MapController implements Initializable {
         // Se non c'è un'immagine, mostriamo la label di fallback.
 
         // Esempio: carichiamo un'immagine di test
-        Image imgUtente = new Image(getClass().getResourceAsStream("/com/skbd/simulatore/Images/userIcon.jpg"));
+        Image imgUtente = new Image(getClass().getResourceAsStream("/com/skbd/simulatore/Images/userIcon.png"));
 
 
         if (imgUtente != null) {
             userAvatarImage.setImage(imgUtente);
             userAvatarImage.setVisible(true); // Mostriamo l'immagine
-            avatarLabel.setVisible(false);    // Nascondiamo la label "IMG"
+            userAvatarLabel.setVisible(false);    // Nascondiamo la label "IMG"
         } else {
             // Se l'immagine manca, mostriamo il fallback circolare con la label
             userAvatarImage.setVisible(false);
-            avatarLabel.setVisible(true);
+            userAvatarLabel.setVisible(true);
         }
     }
 
@@ -300,10 +320,27 @@ public class MapController implements Initializable {
      * SceneManager / Navigator call.
      */
     @FXML
-    private void handleBack() {
-        // TODO: navigate to previous screen
-        // Example: SceneManager.getInstance().navigateTo("home");
-        System.out.println("[MapController] Back requested");
+    private void handleBack(ActionEvent actionEvent) {
+        try {
+            // 1. Carica il nuovo file FXML
+            // Attenzione al percorso! Inizia con "/" e deve rispecchiare la cartella in src/main/resources
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/skbd/simulatore/view/login.fxml"));
+            Parent root = loader.load();
+
+            // 2. Crea la nuova Scena
+            Scene newScene = new Scene(root);
+
+            // 3. Ottieni lo Stage (la finestra attuale) partendo dall'evento del clic
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
+            // 4. Cambia la scena della finestra e mostrala
+            stage.setScene(newScene);
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Page could not be loaded: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -382,5 +419,48 @@ public class MapController implements Initializable {
         injectLineChart(drawerElectricityChart, buildPredictedElectricityData(), "kWh (predicted)");
         injectLineChart(drawerGasChart,         buildPredictedGasData(),         "m³ (predicted)");
         injectLineChart(drawerSavingsChart,      buildSavingsData(),              "€ saved");
+    }
+
+    private void loadMap() {
+        // Svuota il contenitore nel caso venga richiamato più volte
+        mapContainer.getChildren().clear();
+
+        try {
+            // 1. Carichiamo il file SVG come risorsa
+            InputStream svgFile = getClass().getResourceAsStream("/com/skbd/simulatore/Images/it.svg");
+
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(svgFile);
+
+            // 2. Prendiamo tutti i tag <path> (le regioni)
+            NodeList paths = doc.getElementsByTagName("path");
+
+            for (int i = 0; i < paths.getLength(); i++) {
+                Element pathElement = (Element) paths.item(i);
+
+                // Estraiamo le coordinate (d) e il nome (id)
+                String d = pathElement.getAttribute("d");
+                String name = pathElement.getAttribute("name").toUpperCase(); // es: "VENETO"
+
+                // 3. Creiamo l'oggetto grafico JavaFX
+                SVGPath regionPath = new SVGPath();
+                regionPath.setContent(d);
+                regionPath.getStyleClass().add("map-region");
+
+                // Impostiamo l'evento al clic
+                regionPath.setOnMouseClicked(event -> selectRegion(name));
+
+                // Aggiungiamo la regione al contenitore nel file FXML
+                mapContainer.getChildren().add(regionPath);
+            }
+        } catch (Exception e) {
+            System.err.println("Errore nel caricamento della mappa SVG: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Opzionale: centra la mappa nel contenitore
+        // mapContainer.setTranslateX(50);
+        // mapContainer.setTranslateY(50);
     }
 }

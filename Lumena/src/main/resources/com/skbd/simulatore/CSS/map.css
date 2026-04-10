@@ -241,3 +241,20 @@
     -fx-border-color: #E0E0E0;
     -fx-border-width: 1 0 0 0;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MAP REGIONS (SVGPaths)
+   ═══════════════════════════════════════════════════════════ */
+.map-region {
+    -fx-fill: #B0BEC5;          /* Colore di base della regione (es. grigio azzurro) */
+    -fx-stroke: #FFFFFF;        /* Colore del bordo tra le regioni */
+    -fx-stroke-width: 1.5;
+    -fx-cursor: hand;           /* Il cursore diventa una manina */
+    -fx-transition: -fx-fill 0.2s; /* Piccola animazione morbida sul colore */
+}
+
+/* L'ILLUMINAZIONE: quando il mouse passa sopra! */
+.map-region:hover {
+    -fx-fill: #FFCA28;          /* Colore di illuminazione (es. giallo oro) */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 0); /* Ombra per farla risaltare */
+}
