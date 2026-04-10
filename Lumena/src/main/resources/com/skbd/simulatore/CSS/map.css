@@ -1,0 +1,243 @@
+/* ═══════════════════════════════════════════════════════════
+   map.css  —  styles for map.fxml (map view + prediction drawer)
+   Reference in FXML: stylesheets="@styles/map.css"
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Palette ─────────────────────────────────────────────── */
+/* Background scene  : #F4F4F4                               */
+/* Panel surface     : #FFFFFF                               */
+/* Panel border      : #E0E0E0                               */
+/* Accent / dark     : #2C2C2C                               */
+/* Chart bg          : #EBEBEB                               */
+/* Text primary      : #1A1A1A                               */
+/* Text secondary    : #555555                               */
+/* Drawer bg         : #FFFFFF                               */
+
+/* ── Root StackPane ──────────────────────────────────────── */
+.root-pane {
+    -fx-background-color: #F4F4F4;
+}
+
+/* ── Main layer (fills StackPane) ────────────────────────── */
+.main-layer {
+    -fx-background-color: #F4F4F4;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BACK BUTTON  (shared by main layer & drawer)
+   ═══════════════════════════════════════════════════════════ */
+.back-button {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 50;
+    -fx-background-radius: 50;
+    -fx-text-fill: #1A1A1A;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-pref-width:  42;
+    -fx-pref-height: 42;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 6, 0, 0, 2);
+}
+
+.back-button:hover {
+    -fx-background-color: #F0F0F0;
+}
+
+.back-button:pressed {
+    -fx-scale-x: 0.94;
+    -fx-scale-y: 0.94;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AVATAR CIRCLE  (top-right)
+   ═══════════════════════════════════════════════════════════ */
+.avatar-circle {
+    -fx-background-color: #D8D8D8;
+    -fx-background-radius: 50;
+    -fx-pref-width:  60;
+    -fx-pref-height: 60;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 6, 0, 0, 2);
+}
+
+.avatar-circle:hover {
+    -fx-background-color: #C8C8C8;
+}
+
+.avatar-label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAP CONTAINER  (left half)
+   ═══════════════════════════════════════════════════════════ */
+.map-container {
+    -fx-background-color: #F4F4F4;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DETAILS PANEL  (right side VBox)
+   ═══════════════════════════════════════════════════════════ */
+.details-panel {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 0 0 0 1.5;   /* left border only */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0, -4, 0);
+}
+
+/* Region title */
+.region-title {
+    -fx-text-fill: #1A1A1A;
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 3;
+}
+
+/* Separator between sections */
+.panel-separator {
+    -fx-background-color: #E0E0E0;
+    -fx-pref-height: 1;
+    -fx-opacity: 1;
+}
+
+/* ── Filter bar (YEAR / MONTH combos) ────────────────────── */
+.filter-bar {
+    -fx-background-color: transparent;
+}
+
+.filter-combo {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-padding: 4 8 4 8;
+    -fx-cursor: hand;
+}
+
+.filter-combo:focused,
+.filter-combo:showing {
+    -fx-border-color: #2C2C2C;
+}
+
+.filter-combo .list-cell {
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 13;
+}
+
+/* ── Scrollable chart area ───────────────────────────────── */
+.chart-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.chart-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.chart-area {
+    -fx-background-color: transparent;
+}
+
+/* ── Chart section headings ──────────────────────────────── */
+.chart-title {
+    -fx-text-fill: #1A1A1A;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1;
+}
+
+/* ── Chart placeholder pane ──────────────────────────────── */
+.chart-placeholder {
+    -fx-background-color: #EBEBEB;
+    -fx-background-radius: 8;
+    -fx-border-color: #D4D4D4;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PREDICTION BUTTON
+   ═══════════════════════════════════════════════════════════ */
+.prediction-button {
+    -fx-background-color: #2C2C2C;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 2;
+    -fx-background-radius: 10;
+    -fx-padding: 14 0 14 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(44,44,44,0.25), 8, 0, 0, 2);
+}
+
+.prediction-button:hover {
+    -fx-background-color: #444444;
+    -fx-effect: dropshadow(gaussian, rgba(44,44,44,0.35), 12, 0, 0, 4);
+}
+
+.prediction-button:pressed {
+    -fx-background-color: #111111;
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PREDICTION DRAWER  (Layer 2 — full-screen slide-in panel)
+   ═══════════════════════════════════════════════════════════ */
+.prediction-drawer {
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 32, 0, -8, 0);
+}
+
+/* Drawer ScrollPane — transparent chrome */
+.drawer-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.drawer-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Drawer content VBox */
+.drawer-content {
+    -fx-background-color: #FFFFFF;
+}
+
+/* Drawer section wrapper */
+.drawer-section {
+    -fx-background-color: transparent;
+}
+
+/* Section headings inside drawer */
+.drawer-section-title {
+    -fx-text-fill: #1A1A1A;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 2;
+}
+
+/* Data / description text */
+.drawer-data-label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 14;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2;
+}
+
+/* Separator inside drawer inherits default; override colour */
+.drawer-content .separator > .line {
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 1 0 0 0;
+}

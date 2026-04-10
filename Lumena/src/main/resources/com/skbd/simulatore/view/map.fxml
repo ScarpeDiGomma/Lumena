@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<!--
+    MapView — root is a StackPane so the prediction drawer can
+    slide on top of the entire scene (right → left transition).
+
+    Layers (bottom → top):
+      1. mainLayer   : Italy map (left) + side details panel (right)
+      2. drawerLayer : full-screen prediction drawer (translateX starts
+                       at scene width; the controller animates it to 0)
+
+    Controller responsibility:
+      • Populate the Italy SVG/map in #mapContainer
+      • Animate #predictionDrawer via TranslateTransition on PREDICTION click
+      • Populate chart placeholders (#electricityChart, #gasChart)
+      • Populate drawer labels (#drawerElectricityData, #drawerGasData)
+-->
+<StackPane
+    prefHeight="768.0"
+    prefWidth="1280.0"
+    styleClass="root-pane"
+    stylesheets="@../CSS/map.css"
+    xmlns="http://javafx.com/javafx/17"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="com.skbd.simulatore.controller.MapController">
+
+    <!-- ═══════════════════════════════════════════════
+         LAYER 1 — MAIN MAP + SIDE PANEL
+         ═══════════════════════════════════════════════ -->
+    <AnchorPane fx:id="mainLayer" styleClass="main-layer">
+
+        <!-- ── Top-left: back button ── -->
+        <Button
+            fx:id="backButton"
+            text="←"
+            styleClass="back-button"
+            onAction="#handleBack"
+            AnchorPane.topAnchor="20.0"
+            AnchorPane.leftAnchor="20.0"/>
+
+        <!-- ── Top-right: user avatar ── -->
+        <StackPane
+            fx:id="userAvatarPane"
+            styleClass="avatar-circle"
+            onMouseClicked="#handleUserAvatar"
+            AnchorPane.topAnchor="16.0"
+            AnchorPane.rightAnchor="20.0">
+            <Label text="IMG" styleClass="avatar-label"/>
+        </StackPane>
+
+        <!-- ── Left half: Italy map container ── -->
+        <Pane
+            fx:id="mapContainer"
+            styleClass="map-container"
+            AnchorPane.topAnchor="0.0"
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="480.0">
+            <!--
+                The controller loads the Italy SVG / WebView here.
+                Regions are highlighted on click to set the selected region.
+            -->
+        </Pane>
+
+        <!-- ── Right panel: region details ── -->
+        <VBox
+            fx:id="detailsPanel"
+            spacing="0.0"
+            styleClass="details-panel"
+            AnchorPane.topAnchor="0.0"
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.rightAnchor="0.0"
+            prefWidth="480.0">
+
+            <!-- Region title -->
+            <Label
+                fx:id="regionNameLabel"
+                text="VENETO"
+                styleClass="region-title"
+                maxWidth="Infinity">
+                <VBox.margin>
+                    <Insets top="32.0" bottom="16.0" left="24.0" right="24.0"/>
+                </VBox.margin>
+            </Label>
+
+            <Separator styleClass="panel-separator"/>
+
+            <!-- Year / Month selectors -->
+            <HBox
+                alignment="CENTER"
+                spacing="24.0"
+                styleClass="filter-bar">
+                <padding>
+                    <Insets top="16.0" bottom="16.0" left="24.0" right="24.0"/>
+                </padding>
+
+                <ComboBox
+                    fx:id="yearComboBox"
+                    promptText="YEAR"
+                    styleClass="filter-combo"
+                    onAction="#handleFilterChange"
+                    prefWidth="140.0"/>
+
+                <ComboBox
+                    fx:id="monthComboBox"
+                    promptText="MONTH"
+                    styleClass="filter-combo"
+                    onAction="#handleFilterChange"
+                    prefWidth="140.0"/>
+            </HBox>
+
+            <Separator styleClass="panel-separator"/>
+
+            <!-- Scrollable chart area -->
+            <ScrollPane
+                fitToWidth="true"
+                hbarPolicy="NEVER"
+                styleClass="chart-scroll"
+                VBox.vgrow="ALWAYS">
+
+                <VBox spacing="24.0" styleClass="chart-area">
+                    <padding>
+                        <Insets top="20.0" bottom="20.0" left="24.0" right="24.0"/>
+                    </padding>
+
+                    <!-- Electricity chart -->
+                    <VBox spacing="8.0">
+                        <Label text="ELECTRICITY" styleClass="chart-title"/>
+                        <Pane
+                            fx:id="electricityChartContainer"
+                            styleClass="chart-placeholder"
+                            prefHeight="160.0">
+                            <!--
+                                Controller injects a LineChart or
+                                ImageView here at runtime.
+                            -->
+                        </Pane>
+                    </VBox>
+
+                    <!-- Gas chart -->
+                    <VBox spacing="8.0">
+                        <Label text="GAS" styleClass="chart-title"/>
+                        <Pane
+                            fx:id="gasChartContainer"
+                            styleClass="chart-placeholder"
+                            prefHeight="160.0">
+                            <!--
+                                Controller injects a LineChart or
+                                ImageView here at runtime.
+                            -->
+                        </Pane>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+            <!-- PREDICTION button (triggers drawer slide-in) -->
+            <Button
+                fx:id="predictionButton"
+                text="PREDICTION"
+                styleClass="prediction-button"
+                onAction="#handlePrediction"
+                maxWidth="Infinity">
+                <VBox.margin>
+                    <Insets top="16.0" bottom="24.0" left="24.0" right="24.0"/>
+                </VBox.margin>
+            </Button>
+
+        </VBox>
+
+    </AnchorPane>
+
+
+    <!-- ═══════════════════════════════════════════════
+         LAYER 2 — PREDICTION DRAWER
+         Covers the full scene; slides in from the right.
+         Initial translateX = scene width (set by controller
+         in initialize(), e.g. predictionDrawer.setTranslateX(1280)).
+         On PREDICTION click → TranslateTransition to translateX=0.
+         On back arrow inside drawer → TranslateTransition back.
+         ═══════════════════════════════════════════════ -->
+    <AnchorPane
+        fx:id="predictionDrawer"
+        styleClass="prediction-drawer"
+        translateX="1280.0"
+        StackPane.alignment="CENTER">
+
+        <!-- Close / back button -->
+        <Button
+            fx:id="drawerBackButton"
+            text="←"
+            styleClass="back-button"
+            onAction="#handleCloseDrawer"
+            AnchorPane.topAnchor="20.0"
+            AnchorPane.leftAnchor="20.0"/>
+
+        <!-- Drawer content -->
+        <ScrollPane
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="drawer-scroll"
+            AnchorPane.topAnchor="0.0"
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0">
+
+            <VBox
+                spacing="32.0"
+                styleClass="drawer-content">
+                <padding>
+                    <Insets top="80.0" bottom="48.0" left="48.0" right="48.0"/>
+                </padding>
+
+                <!-- Electricity section -->
+                <VBox spacing="12.0" styleClass="drawer-section">
+                    <Label
+                        text="ELECTRICITY"
+                        styleClass="drawer-section-title">
+                        <font>
+                            <Font name="System Bold" size="20.0"/>
+                        </font>
+                    </Label>
+                    <Separator/>
+                    <Label
+                        fx:id="drawerElectricityData"
+                        text="Data electricity consumption"
+                        wrapText="true"
+                        styleClass="drawer-data-label"/>
+                    <!-- Predicted electricity chart / extra info pane -->
+                    <Pane
+                        fx:id="drawerElectricityChart"
+                        styleClass="chart-placeholder"
+                        prefHeight="200.0"/>
+                </VBox>
+
+                <!-- Gas section -->
+                <VBox spacing="12.0" styleClass="drawer-section">
+                    <Label
+                        text="GAS"
+                        styleClass="drawer-section-title">
+                        <font>
+                            <Font name="System Bold" size="20.0"/>
+                        </font>
+                    </Label>
+                    <Separator/>
+                    <Label
+                        fx:id="drawerGasData"
+                        text="Gas consumption data"
+                        wrapText="true"
+                        styleClass="drawer-data-label"/>
+                    <!-- Predicted gas chart / extra info pane -->
+                    <Pane
+                        fx:id="drawerGasChart"
+                        styleClass="chart-placeholder"
+                        prefHeight="200.0"/>
+                </VBox>
+
+                <!-- Future savings section -->
+                <VBox spacing="12.0" styleClass="drawer-section">
+                    <Label
+                        text="FUTURE SAVINGS"
+                        styleClass="drawer-section-title">
+                        <font>
+                            <Font name="System Bold" size="20.0"/>
+                        </font>
+                    </Label>
+                    <Separator/>
+                    <Label
+                        fx:id="drawerSavingsData"
+                        text=""
+                        wrapText="true"
+                        styleClass="drawer-data-label"/>
+                    <Pane
+                        fx:id="drawerSavingsChart"
+                        styleClass="chart-placeholder"
+                        prefHeight="160.0"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+    </AnchorPane>
+
+</StackPane>
