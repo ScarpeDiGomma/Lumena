@@ -1,5 +1,6 @@
 package com.skbd.simulatore.controller;
 
+import com.skbd.simulatore.model.PredictiveModel;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -13,7 +14,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.time.Year;
@@ -58,12 +65,20 @@ public class MapController implements Initializable {
     @FXML private Pane drawerGasChart;
     @FXML private Pane drawerSavingsChart;
 
+    //Relative to the user image
+    @FXML private StackPane userAvatarPane;
+    @FXML private ImageView userAvatarImage; // L'ImageView che abbiamo aggiunto
+    @FXML private Label avatarLabel;       // La label esistente
+
     // ── Animation constants ───────────────────────────────────
     private static final double ANIMATION_MS      = 400.0;
     private static final double DRAWER_HIDDEN_X   = 1280.0; // must match FXML translateX
 
     // ── Currently selected region ─────────────────────────────
     private String selectedRegion = "VENETO";
+
+    // Predictive model
+    private PredictiveModel preModel = new PredictiveModel();
 
     // ─────────────────────────────────────────────────────────
     //  INITIALISE
@@ -77,6 +92,42 @@ public class MapController implements Initializable {
         populateYearComboBox();
         populateMonthComboBox();
         injectCharts();
+
+        //Train the predictive model
+        //preModel.trainModel();
+
+        //Initialize all images
+        initializeImages();
+    }
+
+    private void initializeImages() {
+        initializeUserIcon();
+    }
+
+    private void initializeUserIcon() {
+        // --- STEP 1: Rendere l'immagine circolare (Il Clipping) ---
+        // Creiamo un cerchio. Il raggio deve essere la metà della dimensione dell'immagine (fitWidth/2).
+        // Assicurati che fitWidth e fitHeight siano uguali nell'FXML.
+        Circle clip = new Circle(20, 20, 20); // centerX, centerY, radius
+        userAvatarImage.setClip(clip);
+
+        // --- STEP 2: Caricare l'immagine (Esempio) ---
+        // Immaginiamo di caricare l'immagine dell'utente.
+        // Se non c'è un'immagine, mostriamo la label di fallback.
+
+        // Esempio: carichiamo un'immagine di test
+        Image imgUtente = new Image(getClass().getResourceAsStream("/com/skbd/simulatore/Images/userIcon.jpg"));
+
+
+        if (imgUtente != null) {
+            userAvatarImage.setImage(imgUtente);
+            userAvatarImage.setVisible(true); // Mostriamo l'immagine
+            avatarLabel.setVisible(false);    // Nascondiamo la label "IMG"
+        } else {
+            // Se l'immagine manca, mostriamo il fallback circolare con la label
+            userAvatarImage.setVisible(false);
+            avatarLabel.setVisible(true);
+        }
     }
 
     // ─────────────────────────────────────────────────────────
