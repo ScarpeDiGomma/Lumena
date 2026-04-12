@@ -111,7 +111,7 @@ public class MapController implements Initializable {
         injectCharts();
 
         //Train the predictive model
-        //preModel.trainModel();
+        preModel.trainModel();
 
         //Load the map
         loadMap();

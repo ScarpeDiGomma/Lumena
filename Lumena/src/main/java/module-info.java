@@ -9,6 +9,7 @@ module com.skbd.simulatore {
     //per smile, il modello predittivo
     requires smile.core;
     requires smile.base;
+    requires org.apache.commons.csv;
 
     opens com.skbd.simulatore.view to javafx.fxml;
     opens com.skbd.simulatore.controller to javafx.fxml;
