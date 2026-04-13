@@ -34,13 +34,37 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
+import java.time.LocalDate;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
+
+//Per l'agenzia delle entrate
+    /*
+    ABRUZZO	                1	MOLISE	        12
+    BASILICATA          	2	PIEMONTE	    13
+    BOLZANO	                3	PUGLIA      	14
+    CALABRIA	            4	SARDEGNA    	15
+    CAMPANIA	            5	SICILIA     	16
+    EMILIA ROMAGNA	        6	TOSCANA     	17
+    FRIULI VENEZIA GIULIA	7	TRENTO	        18  (Trentino-Alto Adige)
+    LAZIO	                8	UMBRIA      	19
+    LIGURIA	                9	VALLE D'AOSTA	20
+    LOMBARDIA	            10	VENETO	        21
+    MARCHE	                11
+
+
+
+
+    AT = 3
+    MT = 2
+    ST = 1
+     */
 
 /**
  * Controller for map.fxml.
@@ -84,6 +108,12 @@ public class MapController implements Initializable {
     @FXML private ImageView userAvatarImage; // L'ImageView che abbiamo aggiunto
     @FXML private Label userAvatarLabel;       // La label esistente
 
+    //Static arrays for the association between months and regions to the relative numbers
+    //Months: number associated is index
+    private static final String[] months = {"Spacer", "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
+    //Region: number associated is index
+    private static final String[] regions = {"Spacer", "abruzzo", "basilicata", "bolzano(NOTaREGION)", "calabria", "campania", "emilia-romagna", "friuli venezia giulia", "lazio", "liguria", "lombardy", "marche", "molise", "piedmont", "puglia", "sardegna", "sicilia", "tuscany", "trentino-alto adige", "umbria", "valle d'aosta", "veneto"};
+
     // ── Animation constants ───────────────────────────────────
     private static final double ANIMATION_MS      = 400.0;
     private static final double DRAWER_HIDDEN_X   = 1280.0; // must match FXML translateX
@@ -93,6 +123,9 @@ public class MapController implements Initializable {
 
     //Map container
     @FXML private Pane mapContainer;
+
+    //Actual date
+    private LocalDate actualDate;
 
     // Predictive model
     private PredictiveModel preModel = new PredictiveModel();
@@ -109,6 +142,9 @@ public class MapController implements Initializable {
         populateYearComboBox();
         populateMonthComboBox();
         injectCharts();
+
+        //Get the date
+        actualDate = LocalDate.now();
 
         //Train the predictive model
         preModel.trainModel();
@@ -185,9 +221,9 @@ public class MapController implements Initializable {
     private void injectCharts() {
         injectLineChart(electricityChartContainer, buildElectricityData(), "kWh");
         injectLineChart(gasChartContainer,         buildGasData(),         "m³");
-        injectLineChart(drawerElectricityChart,    buildPredictedElectricityData(), "kWh (predicted)");
-        injectLineChart(drawerGasChart,            buildPredictedGasData(),         "m³ (predicted)");
-        injectLineChart(drawerSavingsChart,        buildSavingsData(),              "€ saved");
+        //injectLineChart(drawerElectricityChart,    buildPredictedElectricityData(21, actualDate.getYear()), "kWh (predicted)");
+        //injectLineChart(drawerGasChart,            buildPredictedGasData(),         "m³ (predicted)");
+        //injectLineChart(drawerSavingsChart,        buildSavingsData(),              "€ saved");
     }
 
     /**
@@ -241,14 +277,42 @@ public class MapController implements Initializable {
         return s;
     }
 
-    private XYChart.Series<String, Number> buildPredictedElectricityData() {
+    private XYChart.Series<String, Number> buildPredictedElectricityData(int regNumber, int year, int monthNumber) {
         XYChart.Series<String, Number> s = new XYChart.Series<>();
         s.setName("Predicted Electricity");
-        String[] months = {"Jan","Feb","Mar","Apr","May","Jun"};
-        double[] values = {315, 285, 265, 245, 225, 255};
-        for (int i = 0; i < months.length; i++) {
-            s.getData().add(new XYChart.Data<>(months[i], values[i]));
+
+        //TODO: ricavare da un sito di previsioni i dati relativi ai mesi da prevedere
+        //TODO: fare un caricamento (addestramento modello, ricavo dati (indicatore) e dati meteo e predizione)
+        //Actual date
+        int actualMonthNumber = findIndex(months, actualDate.getMonth().name().toLowerCase());
+        int actualYear = actualDate.getYear();
+
+        //Year with only the last 2 digits
+        int shortYear;
+
+        //Metto le prime tre lettere del mese prendendoli in base all'indice e un'abbreviazione dell'anno
+        //Add the data as it's getting predicted
+        for (int i = 0; i <= (actualYear - year); i++) {
+            shortYear = (actualYear + i)%100;
+            if (i == 0) {
+                //Scorre i mesi verso la fine dell'anno
+                for (int j = actualMonthNumber; j <= 12; j++) {
+                    //TODO: alcuni valori sono assegnati di default
+                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 2)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
+                }
+            } else if (i == actualYear - year) {
+                //Scorre solo gli ultimi mesi da fare
+                for (int j = 1; j <= monthNumber; j++) {
+                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 2)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
+                }
+            } else {
+                //Scorre 12 mesi
+                for (int j = 1; j <= 12; j++) {
+                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 2)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
+                }
+            }
         }
+
         return s;
     }
 
@@ -291,6 +355,21 @@ public class MapController implements Initializable {
         // TODO: fetch filtered data from service and rebuild charts
         // For now just re-inject the same dummy data
         injectCharts();
+    }
+
+    private int findIndex(String[] arr, String target) {
+        int index = -1;
+        int i = 0;
+
+        while (i<arr.length && index == -1) {
+            if (arr[i].equals(target)) {
+                index = i;
+            }
+
+            i++;
+        }
+
+        return index;
     }
 
     /**
@@ -415,10 +494,18 @@ public class MapController implements Initializable {
                 "Estimated future savings based on current consumption trends.\n"
                 + "Projected annual saving: €1,240  |  CO₂ reduction: 320 kg");
 
-        // Rebuild drawer charts (could swap in prediction-specific data here)
-        injectLineChart(drawerElectricityChart, buildPredictedElectricityData(), "kWh (predicted)");
-        injectLineChart(drawerGasChart,         buildPredictedGasData(),         "m³ (predicted)");
-        injectLineChart(drawerSavingsChart,      buildSavingsData(),              "€ saved");
+        //Region number
+        int regionNumber = findIndex(regions, selectedRegion.toLowerCase());
+
+        if (!Objects.equals(year, "-") && !Objects.equals(month, "-") && preModel.isUsable()) {
+            // Rebuild drawer charts (could swap in prediction-specific data here)
+            //DATI PREDIZIONE
+            injectLineChart(drawerElectricityChart, buildPredictedElectricityData(regionNumber, Integer.parseInt(year), findIndex(months, month.toLowerCase())), "kWh (predicted)");
+            injectLineChart(drawerGasChart,         buildPredictedGasData(),         "m³ (predicted)");
+            injectLineChart(drawerSavingsChart,      buildSavingsData(),              "€ saved");
+        } else {
+            System.out.println("Year or month not selected correctly");
+        }
     }
 
     private void loadMap() {

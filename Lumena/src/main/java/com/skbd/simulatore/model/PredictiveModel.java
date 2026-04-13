@@ -50,15 +50,16 @@ public class PredictiveModel {
                     .build();
 
 
-            // 1. Carica il dataset (assicurati che il file sia nella cartella giusta)
+            // 1. Carica il dataset TODO: cambiare il path da assoluto a relativo
             trainDataEl = Read.csv("C:\\Scuola\\5\\GPOI\\Progetti\\Lumena\\Lumena\\Lumena\\src\\main\\java\\com\\skbd\\simulatore\\model\\electricity2019.csv", format);
 
-            //Per ora non tengo conto della classe, deve essere convertita in numero
+            //TODO: per ogni mese ho il consumo del mese e l'indicatore calcolato da quel mese; l'indicatore dovrebbe andare nei mesi successivi (almeno in quello subito dopo) dato che è un indicatore di crescita: se voglio prevedere i consumi futuri gli metto l'indicatore di crescita futura con i dati del mese il cui consumo voglio prevedere, anche se l'indicatore è stato calcolato basandosi su questo mese
+
+            //TODO: Per ora non tengo conto della classe, deve essere convertita in numero
             trainDataEl = trainDataEl.select("Year", "Month", "Region", "Tension_Type", "Indicator", "Consumption_Gwh", "T_avg", "T_max", "T_min", "Hot_days", "Cold_days", "El_price", "Event", "Eff_intervention");
 
 
-            // 2. Definisce cosa prevedere.
-            // "consumo_kwh ~ ." significa: prevedi consumo_kwh usando TUTTE le altre colonne
+            // 2. Definisce cosa prevedere
             Formula formula = Formula.lhs("Consumption_Gwh");
 
             // 3. Addestra il modello (100 è il numero di alberi decisionali)
@@ -74,8 +75,7 @@ public class PredictiveModel {
     }
 
     // Metodo chiamato dal Controller per fare la previsione in tempo reale
-    //Ricorda di mettere tutti i parametri necessari
-    public double prevediConsumo() {
+    public double predict(int year, int monthNumber, int regionNumber, int tensionType, double indicator, int tAVG, int tMAX, int tMIN, int hotDays, int coldDays, double elPrice, int event, int effIntervention) {
         if (predModelEl == null) {
             throw new IllegalStateException("The model hasn't been trained");
         }
