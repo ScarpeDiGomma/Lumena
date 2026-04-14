@@ -277,6 +277,8 @@ public class MapController implements Initializable {
         return s;
     }
 
+    //TODO: mostrare i consumi storici provenienti dai file csv
+
     private XYChart.Series<String, Number> buildPredictedElectricityData(int regNumber, int year, int monthNumber) {
         XYChart.Series<String, Number> s = new XYChart.Series<>();
         s.setName("Predicted Electricity");

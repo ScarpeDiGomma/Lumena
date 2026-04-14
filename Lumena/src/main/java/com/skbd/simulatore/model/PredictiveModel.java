@@ -53,7 +53,7 @@ public class PredictiveModel {
 
             // 1. Carica il dataset
             trainDataEl = Read.csv("W:\\GPOI\\5\\ProgettoPredizioneEnergetica\\Lumena\\Lumena\\src\\main\\java\\com\\skbd\\simulatore\\model\\electricity2019.csv", format);
-
+            //TODO: i dati relativi alla temperatura presenti nel dataset non solo reali
             //TODO: addestrare il modello con tutti i dati, anche da file diversi
             //TODO: salvare il modello una volta che viene addestrato
             //TODO: per ogni mese ho il consumo del mese e l'indicatore calcolato da quel mese; l'indicatore dovrebbe andare nei mesi successivi (almeno in quello subito dopo) dato che è un indicatore di crescita: se voglio prevedere i consumi futuri gli metto l'indicatore di crescita futura con i dati del mese il cui consumo voglio prevedere, anche se l'indicatore è stato calcolato basandosi su questo mese
