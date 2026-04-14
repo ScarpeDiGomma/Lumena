@@ -193,7 +193,7 @@ public class MapController implements Initializable {
     private void populateYearComboBox() {
         List<String> years = new ArrayList<>();
         int currentYear = Year.now().getValue();
-        for (int y = currentYear; y >= currentYear - 10; y--) {
+        for (int y = currentYear+10; y >= currentYear - 10; y--) {
             years.add(String.valueOf(y));
         }
         yearComboBox.setItems(FXCollections.observableArrayList(years));
@@ -286,9 +286,15 @@ public class MapController implements Initializable {
         //Actual date
         int actualMonthNumber = findIndex(months, actualDate.getMonth().name().toLowerCase());
         int actualYear = actualDate.getYear();
+        System.out.println(actualMonthNumber + " " + monthNumber);
 
         //Year with only the last 2 digits
         int shortYear;
+
+        int yearCounter;
+        int monthsCounter;
+
+        //RIMPIAZZARE CON UN CICLO WHILE
 
         //Metto le prime tre lettere del mese prendendoli in base all'indice e un'abbreviazione dell'anno
         //Add the data as it's getting predicted
@@ -296,19 +302,19 @@ public class MapController implements Initializable {
             shortYear = (actualYear + i)%100;
             if (i == 0) {
                 //Scorre i mesi verso la fine dell'anno
-                for (int j = actualMonthNumber; j <= 12; j++) {
+                for (int j = actualMonthNumber; j <= 12 && j<= monthNumber; j++) {
                     //TODO: alcuni valori sono assegnati di default
-                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 2)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
+                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 3)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
                 }
             } else if (i == actualYear - year) {
                 //Scorre solo gli ultimi mesi da fare
                 for (int j = 1; j <= monthNumber; j++) {
-                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 2)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
+                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 3)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
                 }
             } else {
                 //Scorre 12 mesi
                 for (int j = 1; j <= 12; j++) {
-                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 2)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
+                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 3)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
                 }
             }
         }

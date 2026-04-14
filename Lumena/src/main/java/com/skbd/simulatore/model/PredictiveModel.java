@@ -8,6 +8,7 @@ import smile.regression.RandomForest;
 import org.apache.commons.csv.CSVFormat;
 
 import java.io.InputStream;
+import java.net.URL;
 
 public class PredictiveModel {
     private RandomForest predModelEl;
@@ -50,9 +51,11 @@ public class PredictiveModel {
                     .build();
 
 
-            // 1. Carica il dataset TODO: cambiare il path da assoluto a relativo
-            trainDataEl = Read.csv("C:\\Scuola\\5\\GPOI\\Progetti\\Lumena\\Lumena\\Lumena\\src\\main\\java\\com\\skbd\\simulatore\\model\\electricity2019.csv", format);
+            // 1. Carica il dataset
+            trainDataEl = Read.csv("W:\\GPOI\\5\\ProgettoPredizioneEnergetica\\Lumena\\Lumena\\src\\main\\java\\com\\skbd\\simulatore\\model\\electricity2019.csv", format);
 
+            //TODO: addestrare il modello con tutti i dati, anche da file diversi
+            //TODO: salvare il modello una volta che viene addestrato
             //TODO: per ogni mese ho il consumo del mese e l'indicatore calcolato da quel mese; l'indicatore dovrebbe andare nei mesi successivi (almeno in quello subito dopo) dato che è un indicatore di crescita: se voglio prevedere i consumi futuri gli metto l'indicatore di crescita futura con i dati del mese il cui consumo voglio prevedere, anche se l'indicatore è stato calcolato basandosi su questo mese
 
             //TODO: Per ora non tengo conto della classe, deve essere convertita in numero
@@ -81,7 +84,7 @@ public class PredictiveModel {
         }
 
         // 1. Crea un nuovo record con i parametri scelti dall'utente nell'interfaccia
-        Object[] userValues = {0.0};
+        Object[] userValues = {year, monthNumber, regionNumber, tensionType, indicator, 0.0, tAVG, tMAX, tMIN, hotDays, coldDays, elPrice, event, effIntervention};
         // L'ultimo 0.0 è un placeholder per il consumo_kwh che stiamo per calcolare
 
         Tuple toPredict = Tuple.of(userValues, trainDataEl.schema());
