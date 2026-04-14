@@ -52,7 +52,7 @@ public class PredictiveModel {
 
 
             // 1. Carica il dataset
-            trainDataEl = Read.csv("W:\\GPOI\\5\\ProgettoPredizioneEnergetica\\Lumena\\Lumena\\src\\main\\java\\com\\skbd\\simulatore\\model\\electricity2019.csv", format);
+            trainDataEl = Read.csv("C:\\Scuola\\5\\GPOI\\Progetti\\Lumena\\Lumena\\Lumena\\src\\main\\java\\com\\skbd\\simulatore\\model\\electricity2019.csv", format);
             //TODO: i dati relativi alla temperatura presenti nel dataset non solo reali
             //TODO: addestrare il modello con tutti i dati, anche da file diversi
             //TODO: salvare il modello una volta che viene addestrato

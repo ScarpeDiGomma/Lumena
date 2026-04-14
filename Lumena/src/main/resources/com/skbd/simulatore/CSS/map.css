@@ -165,6 +165,16 @@
     -fx-border-radius: 8;
 }
 
+/* 1. Scurisce i valori/numeri lungo gli assi (es. i mesi o le quantità) */
+.axis {
+    -fx-tick-label-fill: #708090;
+}
+
+/* 2. Scurisce il titolo dell'asse (es. "Energia (kWh)", se lo imposti nel controller) */
+.axis-label {
+    -fx-text-fill: #708090;
+}
+
 /* ═══════════════════════════════════════════════════════════
    PREDICTION BUTTON
    ═══════════════════════════════════════════════════════════ */

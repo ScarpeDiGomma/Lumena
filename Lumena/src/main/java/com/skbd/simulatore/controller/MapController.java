@@ -193,7 +193,7 @@ public class MapController implements Initializable {
     private void populateYearComboBox() {
         List<String> years = new ArrayList<>();
         int currentYear = Year.now().getValue();
-        for (int y = currentYear+10; y >= currentYear - 10; y--) {
+        for (int y = currentYear+10; y >= currentYear; y--) {
             years.add(String.valueOf(y));
         }
         yearComboBox.setItems(FXCollections.observableArrayList(years));
@@ -283,43 +283,32 @@ public class MapController implements Initializable {
         XYChart.Series<String, Number> s = new XYChart.Series<>();
         s.setName("Predicted Electricity");
 
-        //TODO: ricavare da un sito di previsioni i dati relativi ai mesi da prevedere
+        //TODO: ricavare da un sito di previsioni i dati relativi al meteo dei mesi da prevedere
         //TODO: fare un caricamento (addestramento modello, ricavo dati (indicatore) e dati meteo e predizione)
         //Actual date
         int actualMonthNumber = findIndex(months, actualDate.getMonth().name().toLowerCase());
         int actualYear = actualDate.getYear();
-        System.out.println(actualMonthNumber + " " + monthNumber);
 
-        //Year with only the last 2 digits
-        int shortYear;
+        int analizedMonth = actualMonthNumber;
+        int analizedYear = actualYear;
 
-        int yearCounter;
-        int monthsCounter;
+        double lastPrediction = 0;
 
-        //RIMPIAZZARE CON UN CICLO WHILE
-
-        //Metto le prime tre lettere del mese prendendoli in base all'indice e un'abbreviazione dell'anno
-        //Add the data as it's getting predicted
-        for (int i = 0; i <= (actualYear - year); i++) {
-            shortYear = (actualYear + i)%100;
-            if (i == 0) {
-                //Scorre i mesi verso la fine dell'anno
-                for (int j = actualMonthNumber; j <= 12 && j<= monthNumber; j++) {
-                    //TODO: alcuni valori sono assegnati di default
-                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 3)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
-                }
-            } else if (i == actualYear - year) {
-                //Scorre solo gli ultimi mesi da fare
-                for (int j = 1; j <= monthNumber; j++) {
-                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 3)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
-                }
-            } else {
-                //Scorre 12 mesi
-                for (int j = 1; j <= 12; j++) {
-                    s.getData().add(new XYChart.Data<>(months[j].substring(0, 3)+shortYear, preModel.predict(actualYear + i, j, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0)));
-                }
+        while (analizedMonth <= monthNumber || analizedYear < year) {
+            //Check if the analyzed month is in a next year
+            if (analizedMonth > 12) {
+                analizedMonth = analizedMonth - 12;
+                analizedYear ++;
             }
+
+            //Add the predicted data for the month
+            lastPrediction = preModel.predict(analizedYear, analizedMonth, regNumber, 1, 25.00d, 14, 25, 5, 13, 5, 60.00d, 0, 0);
+            s.getData().add(new XYChart.Data<>(months[analizedMonth].substring(0, 3)+(analizedYear%100), lastPrediction));
+
+            analizedMonth ++;
         }
+
+        drawerElectricityData.setText(drawerElectricityData.getText() + lastPrediction + " GWh");
 
         return s;
     }
@@ -490,8 +479,7 @@ public class MapController implements Initializable {
 
         drawerElectricityData.setText(
                 "Predicted electricity consumption for " + selectedRegion
-                + " — " + month + " " + year + ".\n"
-                + "Estimated: 265 kWh  |  Δ vs last year: −8%");
+                + " — " + month + " " + year + ".\n");
 
         drawerGasData.setText(
                 "Predicted gas consumption for " + selectedRegion
@@ -508,7 +496,7 @@ public class MapController implements Initializable {
         if (!Objects.equals(year, "-") && !Objects.equals(month, "-") && preModel.isUsable()) {
             // Rebuild drawer charts (could swap in prediction-specific data here)
             //DATI PREDIZIONE
-            injectLineChart(drawerElectricityChart, buildPredictedElectricityData(regionNumber, Integer.parseInt(year), findIndex(months, month.toLowerCase())), "kWh (predicted)");
+            injectLineChart(drawerElectricityChart, buildPredictedElectricityData(regionNumber, Integer.parseInt(year), findIndex(months, month.toLowerCase())), "GWh (predicted)");
             injectLineChart(drawerGasChart,         buildPredictedGasData(),         "m³ (predicted)");
             injectLineChart(drawerSavingsChart,      buildSavingsData(),              "€ saved");
         } else {
